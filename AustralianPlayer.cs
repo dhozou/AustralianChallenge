@@ -1,6 +1,8 @@
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace AustralianChallenge
@@ -9,8 +11,23 @@ namespace AustralianChallenge
 	{
 		public override bool Autoload(ref string name)
 		{
+			IL.Terraria.Player.BordersMovement += HookBordersMovement;
 			IL.Terraria.Player.Update += HookUpdate;
 			return base.Autoload(ref name);
+		}
+
+		private void HookBordersMovement(ILContext il)
+		{
+			var c = new ILCursor(il);
+			c.GotoNext(i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+			c.Index--;
+			c.RemoveRange(2);
+			c.EmitDelegate<Action<Player>>(player => {
+				if (player.gravDir == -1f)
+				{
+					player.KillMe(PlayerDeathReason.ByCustomReason(player.name + " was swallowed by the sky."), 10.0, 0);
+				}
+			});
 		}
 
 		private void HookUpdate(ILContext il)
