@@ -19,8 +19,7 @@ namespace AustralianChallenge
 
 		private void HookBordersMovement(ILContext il) {
 			var c = new ILCursor(il);
-			c.GotoNext(i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
-			c.Index--;
+			c.GotoNext(i => i.MatchLdcR4(1f) && i.Next.MatchStfld(typeof(Player), nameof(Player.gravDir)));
 			c.RemoveRange(2);
 			c.EmitDelegate<Action<Player>>(player => {
 				if (player.gravDir == -1f)
@@ -38,18 +37,14 @@ namespace AustralianChallenge
 		private void HookUpdate(ILContext il) {
 			var c = new ILCursor(il);
 			c.GotoNext(i => i.MatchCall(typeof(Player), nameof(Player.JumpMovement)));
-			c.GotoPrev(i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
-			c.Index--;
-			c.Remove();
-			c.Emit(OpCodes.Ldc_R4, -1f);
+			c.GotoPrev(i => i.MatchLdcR4(1f) && i.Next.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+			c.Next.Operand = -1f;
 		}
 
 		private void HookUpdateDead(ILContext il) {
 			var c = new ILCursor(il);
-			c.GotoNext(i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
-			c.Index--;
-			c.Remove();
-			c.Emit(OpCodes.Ldc_R4, -1f);
+			c.GotoNext(i => i.MatchLdcR4(1f) && i.Next.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+			c.Next.Operand = -1f;
 		}
 	}
 }
