@@ -20,7 +20,9 @@ namespace AustralianChallenge
 
 		private void HookBordersMovement(ILContext il) {
 			var c = new ILCursor(il);
-			c.GotoNext(i => i.MatchLdcR4(1f) && i.Next.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+			c.GotoNext(
+				i => i.MatchLdcR4(1f),
+				i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
 			c.RemoveRange(2);
 			c.EmitDelegate<Action<Player>>(player => {
 				if (player.gravDir == -1f)
@@ -42,8 +44,14 @@ namespace AustralianChallenge
 				fallThrough: (byte)12
 			);
 
-			c.GotoNext(i => i.MatchCall(typeof(Player), nameof(Player.JumpMovement)));
-			c.GotoPrev(i => i.MatchLdcR4(1f) && i.Next.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+			var label = default(ILLabel);
+			c.GotoNext(
+				i => i.MatchLdfld(typeof(Player), nameof(Player.gravControl2)),
+				i => i.MatchBrfalse(out label));
+			c.GotoLabel(label);
+			c.GotoNext(
+				i => i.MatchLdcR4(1),
+				i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
 			c.Next.Operand = -1f;
 
 			c.GotoNext(MoveType.After,
@@ -61,7 +69,9 @@ namespace AustralianChallenge
 
 		private void HookUpdateDead(ILContext il) {
 			var c = new ILCursor(il);
-			c.GotoNext(i => i.MatchLdcR4(1f) && i.Next.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+			c.GotoNext(
+				i => i.MatchLdcR4(1f),
+				i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
 			c.Next.Operand = -1f;
 		}
 	}
