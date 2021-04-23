@@ -1,8 +1,68 @@
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using System;
+using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace AustralianChallenge
 {
 	public class AustralianChallenge : Mod
 	{
+		public override void Load() {
+			IL.Terraria.Collision.TileCollision += HookTileCollision;
+		}
+
+		private void HookTileCollision(ILContext il) {
+			var c = new ILCursor(il);
+			var arg = (
+				fallThrough: (byte)4,
+				fall2: (byte)5,
+				gravDir: (byte)6
+			);
+			var loc = (
+				x: (byte)13,
+				y: (byte)14,
+				tileHeight: (byte)15
+			);
+
+			var label = default(ILLabel);
+			c.GotoNext(
+				i => i.MatchCallvirt(typeof(Tile), nameof(Tile.halfBrick)),
+				i => i.MatchBrfalse(out label));
+			c.GotoLabel(label);
+			c.Emit(OpCodes.Ldloc_S, loc.tileHeight);
+			c.Emit(OpCodes.Ldloc_S, loc.x);
+			c.Emit(OpCodes.Ldloc_S, loc.y);
+			c.EmitDelegate<Func<int, int, int, int>>((tileHeight, x, y) => {
+				if (TileID.Sets.Platforms[Main.tile[x, y].type])
+					tileHeight -= 8;
+				return tileHeight;
+			});
+			c.Emit(OpCodes.Stloc_S, loc.tileHeight);
+
+			c.GotoNext(MoveType.After,
+				i => i.MatchBgtUn(out label),
+				i => i.MatchLdcI4(1),
+				i => i.MatchStsfld(typeof(Collision), nameof(Collision.down)));
+			c.Emit(OpCodes.Ldarg_S, arg.gravDir);
+			c.Emit(OpCodes.Ldloc_S, loc.x);
+			c.Emit(OpCodes.Ldloc_S, loc.y);
+			c.EmitDelegate<Func<int, int, int, bool>>((gravDir, x, y) =>
+				Main.tileSolidTop[Main.tile[x, y].type] && gravDir == -1f);
+			c.Emit(OpCodes.Brtrue, label);
+
+			c.GotoNext(
+				i => i.MatchBrtrue(out _),
+				i => i.MatchLdcI4(1),
+				i => i.MatchStsfld(typeof(Collision), nameof(Collision.up)));
+			c.Emit(OpCodes.Ldarg_S, arg.gravDir);
+			c.Emit(OpCodes.Ldarg_S, arg.fallThrough);
+			c.Emit(OpCodes.Ldarg_S, arg.fall2);
+			c.Emit(OpCodes.Ldloc_S, loc.x);
+			c.Emit(OpCodes.Ldloc_S, loc.y);
+			c.EmitDelegate<Func<bool, int, bool, bool, int, int, bool>>((tileSolidTop, gravDir, fallThrough, fall2, x, y) =>
+				tileSolidTop && (gravDir == 1f || !TileID.Sets.Platforms[Main.tile[x, y].type] || fallThrough || fall2));
+		}
 	}
 }
