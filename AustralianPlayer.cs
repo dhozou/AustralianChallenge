@@ -33,8 +33,9 @@ namespace AustralianChallenge
 		private void HookSpawn(ILContext il) {
 			var c = new ILCursor(il);
 			c.Emit(OpCodes.Ldarg_0);
-			c.Emit(OpCodes.Ldc_R4, -1f);
-			c.Emit(OpCodes.Stfld, typeof(Player).GetField(nameof(Player.gravDir)));
+			c.EmitDelegate<Action<Player>>(player => {
+				player.gravDir = -1f;
+			});
 		}
 
 		private void HookUpdate(ILContext il) {
@@ -52,7 +53,10 @@ namespace AustralianChallenge
 			c.GotoNext(
 				i => i.MatchLdcR4(1),
 				i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
-			c.Next.Operand = -1f;
+			c.RemoveRange(2);
+			c.EmitDelegate<Action<Player>>(player => {
+				player.gravDir = -1f;
+			});
 
 			c.GotoNext(MoveType.After,
 				i => i.MatchLdfld(typeof(Player), nameof(Player.controlDown)),
@@ -72,7 +76,10 @@ namespace AustralianChallenge
 			c.GotoNext(
 				i => i.MatchLdcR4(1f),
 				i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
-			c.Next.Operand = -1f;
+			c.RemoveRange(2);
+			c.EmitDelegate<Action<Player>>(player => {
+				player.gravDir = -1f;
+			});
 		}
 	}
 }
