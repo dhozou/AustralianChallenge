@@ -3,3 +3,7 @@ The Australian Challenge turns Terraria on its head - literally. Upon generating
 This mod is a work in progress. Terraria has some limitations when played exclusively with reversed gravity, which this mod intends to address. Please report issues and mod incompatibilities in the forum thread or on GitHub.
 
 Special thanks to Aimuzion for suggesting the challenge that inspired this mod.
+
+What's New (0.2.0)
+- Platform collision now works upside down
+- Spawn platform no longer cuts off trees

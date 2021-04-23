@@ -1,5 +1,5 @@
 displayName = The Australian Challenge
 author = Dhozou
-version = 0.1.2
+version = 0.2.0
 includePDB = false
 homepage = https://forums.terraria.org/index.php?threads/the-australian-challenge.104763/
