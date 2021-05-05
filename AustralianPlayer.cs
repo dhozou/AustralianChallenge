@@ -22,7 +22,7 @@ namespace AustralianChallenge
 			var c = new ILCursor(il);
 			c.GotoNext(
 				i => i.MatchLdcR4(1f),
-				i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+				i => i.MatchStfld<Player>(nameof(Player.gravDir)));
 			c.RemoveRange(2);
 			c.EmitDelegate<Action<Player>>(player => {
 				if (player.gravDir == -1f)
@@ -47,22 +47,22 @@ namespace AustralianChallenge
 
 			var label = default(ILLabel);
 			c.GotoNext(
-				i => i.MatchLdfld(typeof(Player), nameof(Player.gravControl2)),
+				i => i.MatchLdfld<Player>(nameof(Player.gravControl2)),
 				i => i.MatchBrfalse(out label));
 			c.GotoLabel(label);
 			c.GotoNext(
 				i => i.MatchLdcR4(1),
-				i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+				i => i.MatchStfld<Player>(nameof(Player.gravDir)));
 			c.RemoveRange(2);
 			c.EmitDelegate<Action<Player>>(player => {
 				player.gravDir = -1f;
 			});
 
 			c.GotoNext(MoveType.After,
-				i => i.MatchLdfld(typeof(Player), nameof(Player.controlDown)),
+				i => i.MatchLdfld<Player>(nameof(Player.controlDown)),
 				i => i.MatchStloc(loc.fallThrough),
 				i => i.MatchLdarg(0),
-				i => i.MatchLdfld(typeof(Player), nameof(Player.gravDir)),
+				i => i.MatchLdfld<Player>(nameof(Player.gravDir)),
 				i => i.MatchLdcR4(-1f),
 				i => i.MatchBeq(out _));
 			c.Index -= 3;
@@ -75,7 +75,7 @@ namespace AustralianChallenge
 			var c = new ILCursor(il);
 			c.GotoNext(
 				i => i.MatchLdcR4(1f),
-				i => i.MatchStfld(typeof(Player), nameof(Player.gravDir)));
+				i => i.MatchStfld<Player>(nameof(Player.gravDir)));
 			c.RemoveRange(2);
 			c.EmitDelegate<Action<Player>>(player => {
 				player.gravDir = -1f;

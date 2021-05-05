@@ -28,7 +28,7 @@ namespace AustralianChallenge
 
 			var label = default(ILLabel);
 			c.GotoNext(
-				i => i.MatchCallvirt(typeof(Tile), nameof(Tile.halfBrick)),
+				i => i.MatchCallvirt<Tile>(nameof(Tile.halfBrick)),
 				i => i.MatchBrfalse(out label));
 			c.GotoLabel(label);
 			c.Emit(OpCodes.Ldloc_S, loc.tileHeight);
@@ -44,7 +44,7 @@ namespace AustralianChallenge
 			c.GotoNext(MoveType.After,
 				i => i.MatchBgtUn(out label),
 				i => i.MatchLdcI4(1),
-				i => i.MatchStsfld(typeof(Collision), nameof(Collision.down)));
+				i => i.MatchStsfld<Collision>(nameof(Collision.down)));
 			c.Emit(OpCodes.Ldarg_S, arg.gravDir);
 			c.Emit(OpCodes.Ldloc_S, loc.x);
 			c.Emit(OpCodes.Ldloc_S, loc.y);
@@ -55,7 +55,7 @@ namespace AustralianChallenge
 			c.GotoNext(
 				i => i.MatchBrtrue(out _),
 				i => i.MatchLdcI4(1),
-				i => i.MatchStsfld(typeof(Collision), nameof(Collision.up)));
+				i => i.MatchStsfld<Collision>(nameof(Collision.up)));
 			c.Emit(OpCodes.Ldarg_S, arg.gravDir);
 			c.Emit(OpCodes.Ldarg_S, arg.fallThrough);
 			c.Emit(OpCodes.Ldarg_S, arg.fall2);
