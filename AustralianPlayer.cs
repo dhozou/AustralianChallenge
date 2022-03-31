@@ -19,6 +19,7 @@ namespace AustralianChallenge
 		}
 
 		private void HookBordersMovement(ILContext il) {
+			// kill players that fall into space
 			var c = new ILCursor(il);
 			c.GotoNext(
 				i => i.MatchLdcR4(1f),
@@ -31,6 +32,7 @@ namespace AustralianChallenge
 		}
 
 		private void HookSpawn(ILContext il) {
+			// invert gravity by default
 			var c = new ILCursor(il);
 			c.Emit(OpCodes.Ldarg_0);
 			c.EmitDelegate<Action<Player>>(player => {
@@ -45,6 +47,7 @@ namespace AustralianChallenge
 				fallThrough: (byte)12
 			);
 
+			// invert gravity by default
 			var label = default(ILLabel);
 			c.GotoNext(
 				i => i.MatchLdfld<Player>(nameof(Player.gravControl2)),
@@ -58,6 +61,7 @@ namespace AustralianChallenge
 				player.gravDir = -1f;
 			});
 
+			// don't fall through platforms while inverted
 			c.GotoNext(MoveType.After,
 				i => i.MatchLdfld<Player>(nameof(Player.controlDown)),
 				i => i.MatchStloc(loc.fallThrough),
@@ -72,6 +76,7 @@ namespace AustralianChallenge
 		}
 
 		private void HookUpdateDead(ILContext il) {
+			// invert gravity by default
 			var c = new ILCursor(il);
 			c.GotoNext(
 				i => i.MatchLdcR4(1f),

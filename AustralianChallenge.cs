@@ -26,6 +26,7 @@ namespace AustralianChallenge
 				tileHeight: (byte)15
 			);
 
+			// halve height of platform tiles
 			var label = default(ILLabel);
 			c.GotoNext(
 				i => i.MatchCallvirt<Tile>(nameof(Tile.halfBrick)),
@@ -41,6 +42,7 @@ namespace AustralianChallenge
 			});
 			c.Emit(OpCodes.Stloc_S, loc.tileHeight);
 
+			// disable collision with solid-topped tiles while inverted
 			c.GotoNext(MoveType.After,
 				i => i.MatchBgtUn(out label),
 				i => i.MatchLdcI4(1),
@@ -52,6 +54,7 @@ namespace AustralianChallenge
 				Main.tileSolidTop[Main.tile[x, y].type] && gravDir == -1f);
 			c.Emit(OpCodes.Brtrue, label);
 
+			// add inverted platform collision logic
 			c.GotoNext(
 				i => i.MatchBrtrue(out _),
 				i => i.MatchLdcI4(1),
