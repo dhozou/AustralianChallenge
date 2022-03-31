@@ -16,12 +16,12 @@ namespace AustralianChallenge
 		private void HookTileCollision(ILContext il) {
 			var arg = (
 				fallThrough: (byte)4,
-				fall2: (byte)5,
-				gravDir: (byte)6
+				fall2:       (byte)5,
+				gravDir:     (byte)6
 			);
 			var loc = (
-				x: (byte)13,
-				y: (byte)14,
+				x:          (byte)13,
+				y:          (byte)14,
 				tileHeight: (byte)15
 			);
 
