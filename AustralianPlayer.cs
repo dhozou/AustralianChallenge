@@ -76,15 +76,13 @@ namespace AustralianChallenge
 		}
 
 		private void HookUpdateDead(ILContext il) {
-			// invert gravity by default
+			// preserve gravity on death screen
 			var c = new ILCursor(il);
 			c.GotoNext(
+				i => i.MatchLdarg(0),
 				i => i.MatchLdcR4(1f),
 				i => i.MatchStfld<Player>(nameof(Player.gravDir)));
-			c.RemoveRange(2);
-			c.EmitDelegate<Action<Player>>(player => {
-				player.gravDir = -1f;
-			});
+			c.RemoveRange(3);
 		}
 	}
 }
