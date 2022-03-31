@@ -14,7 +14,6 @@ namespace AustralianChallenge
 		}
 
 		private void HookTileCollision(ILContext il) {
-			var c = new ILCursor(il);
 			var arg = (
 				fallThrough: (byte)4,
 				fall2: (byte)5,
@@ -27,45 +26,55 @@ namespace AustralianChallenge
 			);
 
 			// halve height of platform tiles
-			var label = default(ILLabel);
-			c.GotoNext(
-				i => i.MatchCallvirt<Tile>(nameof(Tile.halfBrick)),
-				i => i.MatchBrfalse(out label));
-			c.GotoLabel(label);
-			c.Emit(OpCodes.Ldloc_S, loc.tileHeight);
-			c.Emit(OpCodes.Ldloc_S, loc.x);
-			c.Emit(OpCodes.Ldloc_S, loc.y);
-			c.EmitDelegate<Func<int, int, int, int>>((tileHeight, x, y) => {
-				if (TileID.Sets.Platforms[Main.tile[x, y].type])
-					tileHeight -= 8;
-				return tileHeight;
-			});
-			c.Emit(OpCodes.Stloc_S, loc.tileHeight);
+			{
+				var c = new ILCursor(il);
+				var label = default(ILLabel);
+				c.GotoNext(
+					i => i.MatchCallvirt<Tile>(nameof(Tile.halfBrick)),
+					i => i.MatchBrfalse(out label));
+				c.GotoLabel(label);
+				c.Emit(OpCodes.Ldloc_S, loc.tileHeight);
+				c.Emit(OpCodes.Ldloc_S, loc.x);
+				c.Emit(OpCodes.Ldloc_S, loc.y);
+				c.EmitDelegate<Func<int, int, int, int>>((tileHeight, x, y) => {
+					if (TileID.Sets.Platforms[Main.tile[x, y].type])
+						tileHeight -= 8;
+					return tileHeight;
+				});
+				c.Emit(OpCodes.Stloc_S, loc.tileHeight);
+			}
 
 			// disable collision with solid-topped tiles while inverted
-			c.GotoNext(MoveType.After,
-				i => i.MatchBgtUn(out label),
-				i => i.MatchLdcI4(1),
-				i => i.MatchStsfld<Collision>(nameof(Collision.down)));
-			c.Emit(OpCodes.Ldarg_S, arg.gravDir);
-			c.Emit(OpCodes.Ldloc_S, loc.x);
-			c.Emit(OpCodes.Ldloc_S, loc.y);
-			c.EmitDelegate<Func<int, int, int, bool>>((gravDir, x, y) =>
-				Main.tileSolidTop[Main.tile[x, y].type] && gravDir == -1f);
-			c.Emit(OpCodes.Brtrue, label);
+			{
+				var c = new ILCursor(il);
+				var label = default(ILLabel);
+				c.GotoNext(MoveType.After,
+					i => i.MatchBgtUn(out label),
+					i => i.MatchLdcI4(1),
+					i => i.MatchStsfld<Collision>(nameof(Collision.down)));
+				c.Emit(OpCodes.Ldarg_S, arg.gravDir);
+				c.Emit(OpCodes.Ldloc_S, loc.x);
+				c.Emit(OpCodes.Ldloc_S, loc.y);
+				c.EmitDelegate<Func<int, int, int, bool>>((gravDir, x, y) =>
+					Main.tileSolidTop[Main.tile[x, y].type] && gravDir == -1f);
+				c.Emit(OpCodes.Brtrue, label);
+			}
 
 			// add inverted platform collision logic
-			c.GotoNext(
-				i => i.MatchBrtrue(out _),
-				i => i.MatchLdcI4(1),
-				i => i.MatchStsfld<Collision>(nameof(Collision.up)));
-			c.Emit(OpCodes.Ldarg_S, arg.gravDir);
-			c.Emit(OpCodes.Ldarg_S, arg.fallThrough);
-			c.Emit(OpCodes.Ldarg_S, arg.fall2);
-			c.Emit(OpCodes.Ldloc_S, loc.x);
-			c.Emit(OpCodes.Ldloc_S, loc.y);
-			c.EmitDelegate<Func<bool, int, bool, bool, int, int, bool>>((tileSolidTop, gravDir, fallThrough, fall2, x, y) =>
-				tileSolidTop && (gravDir == 1f || !TileID.Sets.Platforms[Main.tile[x, y].type] || fallThrough || fall2));
+			{
+				var c = new ILCursor(il);
+				c.GotoNext(
+					i => i.MatchBrtrue(out _),
+					i => i.MatchLdcI4(1),
+					i => i.MatchStsfld<Collision>(nameof(Collision.up)));
+				c.Emit(OpCodes.Ldarg_S, arg.gravDir);
+				c.Emit(OpCodes.Ldarg_S, arg.fallThrough);
+				c.Emit(OpCodes.Ldarg_S, arg.fall2);
+				c.Emit(OpCodes.Ldloc_S, loc.x);
+				c.Emit(OpCodes.Ldloc_S, loc.y);
+				c.EmitDelegate<Func<bool, int, bool, bool, int, int, bool>>((tileSolidTop, gravDir, fallThrough, fall2, x, y) =>
+					tileSolidTop && (gravDir == 1f || !TileID.Sets.Platforms[Main.tile[x, y].type] || fallThrough || fall2));
+			}
 		}
 	}
 }

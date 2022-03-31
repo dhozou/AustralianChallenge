@@ -41,38 +41,43 @@ namespace AustralianChallenge
 		}
 
 		private void HookUpdate(ILContext il) {
-			var c = new ILCursor(il);
 			var loc = (
 				ignorePlats: (byte)11,
 				fallThrough: (byte)12
 			);
 
 			// invert gravity by default
-			var label = default(ILLabel);
-			c.GotoNext(
-				i => i.MatchLdfld<Player>(nameof(Player.gravControl2)),
-				i => i.MatchBrfalse(out label));
-			c.GotoLabel(label);
-			c.GotoNext(
-				i => i.MatchLdcR4(1),
-				i => i.MatchStfld<Player>(nameof(Player.gravDir)));
-			c.RemoveRange(2);
-			c.EmitDelegate<Action<Player>>(player => {
-				player.gravDir = -1f;
-			});
+			{
+				var c = new ILCursor(il);
+				var label = default(ILLabel);
+				c.GotoNext(
+					i => i.MatchLdfld<Player>(nameof(Player.gravControl2)),
+					i => i.MatchBrfalse(out label));
+				c.GotoLabel(label);
+				c.GotoNext(
+					i => i.MatchLdcR4(1),
+					i => i.MatchStfld<Player>(nameof(Player.gravDir)));
+				c.RemoveRange(2);
+				c.EmitDelegate<Action<Player>>(player => {
+					player.gravDir = -1f;
+				});
+			}
 
 			// don't fall through platforms while inverted
-			c.GotoNext(MoveType.After,
-				i => i.MatchLdfld<Player>(nameof(Player.controlDown)),
-				i => i.MatchStloc(loc.fallThrough),
-				i => i.MatchLdarg(0),
-				i => i.MatchLdfld<Player>(nameof(Player.gravDir)),
-				i => i.MatchLdcR4(-1f),
-				i => i.MatchBeq(out _));
-			c.Index -= 3;
-			c.RemoveRange(3);
-			c.EmitDelegate<Func<Player, bool>>(player => player.gravDir == -1f && player.velocity.Y > 0f);
-			c.Emit(OpCodes.Stloc_S, loc.ignorePlats);
+			{
+				var c = new ILCursor(il);
+				c.GotoNext(MoveType.After,
+					i => i.MatchLdfld<Player>(nameof(Player.controlDown)),
+					i => i.MatchStloc(loc.fallThrough),
+					i => i.MatchLdarg(0),
+					i => i.MatchLdfld<Player>(nameof(Player.gravDir)),
+					i => i.MatchLdcR4(-1f),
+					i => i.MatchBeq(out _));
+				c.Index -= 3;
+				c.RemoveRange(3);
+				c.EmitDelegate<Func<Player, bool>>(player => player.gravDir == -1f && player.velocity.Y > 0f);
+				c.Emit(OpCodes.Stloc_S, loc.ignorePlats);
+			}
 		}
 
 		private void HookUpdateDead(ILContext il) {
