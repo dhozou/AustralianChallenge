@@ -75,7 +75,8 @@ namespace AustralianChallenge
 					i => i.MatchBeq(out _));
 				c.Index -= 3;
 				c.RemoveRange(3);
-				c.EmitDelegate<Func<Player, bool>>(player => player.gravDir == -1f && player.velocity.Y > 0f);
+				c.EmitDelegate<Func<Player, bool>>(player =>
+					player.gravDir == -1f && player.velocity.Y > 0f);
 				c.Emit(OpCodes.Stloc_S, loc.ignorePlats);
 			}
 		}
