@@ -30,14 +30,14 @@ namespace AustralianChallenge
 				var c = new ILCursor(il);
 				var label = default(ILLabel);
 				c.GotoNext(
-					i => i.MatchCallvirt<Tile>(nameof(Tile.halfBrick)),
+					i => i.MatchCall<Tile>("halfBrick"), // internal
 					i => i.MatchBrfalse(out label));
 				c.GotoLabel(label);
 				c.Emit(OpCodes.Ldloc_S, loc.tileHeight);
 				c.Emit(OpCodes.Ldloc_S, loc.x);
 				c.Emit(OpCodes.Ldloc_S, loc.y);
 				c.EmitDelegate<Func<int, int, int, int>>((tileHeight, x, y) => {
-					if (TileID.Sets.Platforms[Main.tile[x, y].type])
+					if (TileID.Sets.Platforms[Main.tile[x, y].TileType])
 						tileHeight -= 8;
 					return tileHeight;
 				});
@@ -56,7 +56,7 @@ namespace AustralianChallenge
 				c.Emit(OpCodes.Ldloc_S, loc.x);
 				c.Emit(OpCodes.Ldloc_S, loc.y);
 				c.EmitDelegate<Func<int, int, int, bool>>((gravDir, x, y) =>
-					Main.tileSolidTop[Main.tile[x, y].type] && gravDir == -1f);
+					Main.tileSolidTop[Main.tile[x, y].TileType] && gravDir == -1f);
 				c.Emit(OpCodes.Brtrue, label);
 			}
 
@@ -73,7 +73,7 @@ namespace AustralianChallenge
 				c.Emit(OpCodes.Ldloc_S, loc.x);
 				c.Emit(OpCodes.Ldloc_S, loc.y);
 				c.EmitDelegate<Func<bool, int, bool, bool, int, int, bool>>((tileSolidTop, gravDir, fallThrough, fall2, x, y) =>
-					tileSolidTop && (gravDir == 1f || !TileID.Sets.Platforms[Main.tile[x, y].type] || fallThrough || fall2));
+					tileSolidTop && (gravDir == 1f || !TileID.Sets.Platforms[Main.tile[x, y].TileType] || fallThrough || fall2));
 			}
 		}
 	}

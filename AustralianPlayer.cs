@@ -9,13 +9,11 @@ namespace AustralianChallenge
 {
 	public class AustralianPlayer : ModPlayer
 	{
-		public override bool Autoload(ref string name) {
+		public override void Load() {
 			IL.Terraria.Player.BordersMovement += HookBordersMovement;
 			IL.Terraria.Player.Spawn += HookSpawn;
 			IL.Terraria.Player.Update += HookUpdate;
 			IL.Terraria.Player.UpdateDead += HookUpdateDead;
-
-			return base.Autoload(ref name);
 		}
 
 		private void HookBordersMovement(ILContext il) {
@@ -42,8 +40,8 @@ namespace AustralianChallenge
 
 		private void HookUpdate(ILContext il) {
 			var loc = (
-				ignorePlats: (byte)11,
-				fallThrough: (byte)12
+				ignorePlats: (byte)12,
+				fallThrough: (byte)13
 			);
 
 			// invert gravity by default
@@ -72,12 +70,13 @@ namespace AustralianChallenge
 					i => i.MatchLdarg(0),
 					i => i.MatchLdfld<Player>(nameof(Player.gravDir)),
 					i => i.MatchLdcR4(-1f),
-					i => i.MatchBeq(out _));
+					i => i.MatchCeq());
 				c.Index -= 3;
 				c.RemoveRange(3);
 				c.EmitDelegate<Func<Player, bool>>(player =>
 					player.gravDir == -1f && player.velocity.Y > 0f);
 				c.Emit(OpCodes.Stloc_S, loc.ignorePlats);
+				c.Emit(OpCodes.Ldc_I4_0);
 			}
 		}
 
