@@ -4,6 +4,6 @@ This mod is a work in progress. Terraria has some limitations when played exclus
 
 Special thanks to Aimuzion for suggesting the challenge that inspired this mod.
 
-What's New (0.2.0)
-- Platform collision now works upside down
-- Spawn platform no longer cuts off trees
+What's New (0.3.0)
+- Updated for tModLoader 1.4 Alpha
+- Players now keep their orientation on the death screen
