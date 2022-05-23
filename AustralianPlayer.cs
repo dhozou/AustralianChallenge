@@ -10,10 +10,21 @@ namespace AustralianChallenge
 	public class AustralianPlayer : ModPlayer
 	{
 		public override void Load() {
+			IL.Terraria.GameContent.PlayerSleepingHelper.StartSleeping += HookStartSleeping;
 			IL.Terraria.Player.BordersMovement += HookBordersMovement;
 			IL.Terraria.Player.Spawn += HookSpawn;
 			IL.Terraria.Player.Update += HookUpdate;
 			IL.Terraria.Player.UpdateDead += HookUpdateDead;
+		}
+
+		private void HookStartSleeping(ILContext il) {
+			// preserve gravity while sleeping
+			var c = new ILCursor(il);
+			c.GotoNext(
+				i => i.MatchLdarg(1),
+				i => i.MatchLdcR4(1),
+				i => i.MatchStfld<Player>(nameof(Player.gravDir)));
+			c.RemoveRange(3);
 		}
 
 		private void HookBordersMovement(ILContext il) {
