@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace AustralianChallenge
 {
-	public class AustralianPlayer : ModPlayer
+	internal class AustralianPlayer : ModSystem
 	{
 		public override void Load() {
 			IL.Terraria.GameContent.PlayerSleepingHelper.StartSleeping += HookStartSleeping;

@@ -8,7 +8,7 @@ using Terraria.WorldBuilding;
 
 namespace AustralianChallenge
 {
-	public class AustralianWorld : ModSystem
+	internal class AustralianWorld : ModSystem
 	{
 		public override void ModifyWorldGenTasks(List<GenPass> tasks, ref float totalWeight) {
 			var index = tasks.FindIndex(pass => pass.Name == "Spawn Point");
