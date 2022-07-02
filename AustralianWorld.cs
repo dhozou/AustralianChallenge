@@ -16,9 +16,8 @@ namespace AustralianChallenge
 				throw new Exception("Failed to insert \"Spawn Platform\" generation pass.");
 
 			tasks.Insert(index + 1, new PassLegacy("Spawn Platform", (_, _) => {
-				for (int x = Main.spawnTileX - 2; x <= Main.spawnTileX + 2; x++) {
+				for (int x = Main.spawnTileX - 2; x <= Main.spawnTileX + 2; x++)
 					WorldGen.PlaceTile(x, Main.spawnTileY - 5, TileID.Cloud, forced: true);
-				}
 			}));
 		}
 	}
