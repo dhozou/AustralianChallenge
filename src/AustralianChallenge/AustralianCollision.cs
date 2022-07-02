@@ -34,7 +34,8 @@ namespace AustralianChallenge
 					c.Emit(OpCodes.Ldloc_S, loc.x);
 					c.Emit(OpCodes.Ldloc_S, loc.y);
 					c.EmitDelegate<Func<int, int, int, int>>((tileHeight, x, y) => {
-						if (TileID.Sets.Platforms[Main.tile[x, y].TileType])
+						var tile = Main.tile[x, y];
+						if (TileID.Sets.Platforms[tile.TileType] && tile.BlockType == BlockType.Solid)
 							tileHeight -= 8;
 						return tileHeight;
 					});
