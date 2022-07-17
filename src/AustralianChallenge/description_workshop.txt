@@ -13,4 +13,5 @@ Special thanks to Aimuzion for the idea behind this mod.
 [*] Ropes cannot be climbed
 [*] Players fall out of beds unless there is a block underneath
 [*] Players may repeatedly fall into the sky if the spawn platform is moved
+[*] Wormhole potions may teleport you above or below your target
 [/LIST]
