@@ -1,0 +1,6 @@
+[H1]0.3.1[/H1]
+[LIST]
+[*] Players keep their orientation while sleeping
+[*] Upside down hammered platforms have visually correct collision
+[*] Players place platforms upside down by default
+[/LIST]

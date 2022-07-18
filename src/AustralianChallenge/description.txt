@@ -4,6 +4,7 @@ This mod is a work in progress. Terraria places some limitations on what can be 
 
 Special thanks to Aimuzion for the idea behind this mod.
 
-What's New (0.3.0)
-- Updated for tModLoader 1.4 Alpha
-- Players now keep their orientation on the death screen
+What's New (0.3.1)
+- Players keep their orientation while sleeping
+- Upside down hammered platforms have visually correct collision
+- Players place platforms upside down by default
